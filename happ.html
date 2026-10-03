@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>be routed. // HAPP ROUTING PROTOCOL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #171616;
+      --bg-alt: #1c1b1b;
+      --surface: #201f1f;
+      --surface-header: #262424;
+      --border: #333030;
+      --border-bright: #524e4e;
+      --border-focus: #ffcf00;
+      --text: #c9c6c1;
+      --text-white: #ffffff;
+      --text-muted: #787570;
+      --accent-yellow: #ffcf00;
+      --accent-yellow-hover: #e6bb00;
+      --accent-red: #c8385a;
+      --accent-green: #22c55e;
+      --font-brand: 'Dela Gothic One', cursive, sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+      --grid-size: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        linear-gradient(to right, rgba(201, 198, 193, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(201, 198, 193, 0.035) 1px, transparent 1px);
+      background-size: var(--grid-size) var(--grid-size);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 54px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* BRAND HEADER */
+    .header {
+      text-align: center;
+      padding: 4px 0 8px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .brand-title {
+      font-family: var(--font-brand);
+      font-size: 28px;
+      color: var(--text-white);
+      letter-spacing: -0.5px;
+      text-transform: lowercase;
+      line-height: 1;
+    }
+
+    .brand-dot {
+      color: var(--accent-red);
+    }
+
+    .tag-telemetry {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-yellow);
+      background: #252323;
+      border: 1px solid var(--border);
+      padding: 4px 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .header-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .header-desc b {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* INDUSTRIAL PANEL WITH CORNER CROSSHAIRS */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .corner-crosshairs::before,
+    .corner-crosshairs::after {
+      content: "+";
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--border-bright);
+      pointer-events: none;
+      line-height: 1;
+    }
+    .corner-crosshairs::before { top: -6px; left: -4px; }
+    .corner-crosshairs::after { bottom: -6px; right: -4px; }
+
+    .panel-bar {
+      background: var(--surface-header);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .panel-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-white);
+      font-weight: 700;
+    }
+
+    .status-indicator {
+      width: 7px;
+      height: 7px;
+      background: var(--accent-yellow);
+      box-shadow: 0 0 6px rgba(255, 207, 0, 0.6);
+      display: inline-block;
+    }
+
+    .panel-body {
+      padding: 20px;
+    }
+
+    /* CTA BUTTON */
+    .btn-action {
+      width: 100%;
+      padding: 18px 20px;
+      background: var(--accent-yellow);
+      color: #171616;
+      border: 1px solid var(--accent-yellow);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.12s ease-in-out;
+      user-select: none;
+    }
+
+    .btn-action:hover {
+      background: var(--accent-yellow-hover);
+      border-color: var(--accent-yellow-hover);
+    }
+
+    .btn-action:active {
+      transform: translateY(1px);
+    }
+
+    .btn-action.success {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+      color: #ffffff;
+    }
+
+    .btn-action svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .alert-box {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: #19251c;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #86efac;
+      line-height: 1.5;
+      animation: alertSlide 0.2s ease-out;
+    }
+
+    @keyframes alertSlide {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* GUIDE STEPS */
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .step-idx {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-yellow);
+      background: #171616;
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      min-width: 32px;
+      text-align: center;
+      margin-top: 1px;
+    }
+
+    .step-instruction {
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .step-instruction b {
+      color: var(--text-white);
+      font-weight: 700;
+    }
+
+    .highlight-pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-yellow);
+      background: #171616;
+      border: 1px solid var(--border);
+      padding: 1px 7px;
+      margin: 1px 2px;
+    }
+
+    /* NOTE PANEL */
+    .note-panel {
+      background: #1c1a1a;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent-yellow);
+      padding: 14px 16px;
+      font-size: 12.5px;
+      color: #aaa69f;
+      line-height: 1.55;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .note-panel svg {
+      width: 18px;
+      height: 18px;
+      color: var(--accent-yellow);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* COLLAPSIBLE PACKAGES */
+    details summary {
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      user-select: none;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 4px 0;
+      transition: color 0.15s ease;
+    }
+
+    details summary:hover {
+      color: var(--text-white);
+    }
+
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .chevron {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.2s ease;
+    }
+
+    details[open] .chevron {
+      transform: rotate(180deg);
+    }
+
+    .search-input {
+      width: 100%;
+      margin-top: 14px;
+      padding: 11px 14px;
+      background: #171616;
+      border: 1px solid var(--border);
+      color: var(--text-white);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-yellow);
+    }
+
+    .search-input::placeholder {
+      color: #575450;
+    }
+
+    /* FIXED PACKAGE SCROLL CONTAINER & ITEMS */
+    .package-scroll {
+      max-height: 240px;
+      overflow-y: auto;
+      margin-top: 10px;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .package-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .package-scroll::-webkit-scrollbar-thumb {
+      background: #383535;
+      border-radius: 2px;
+    }
+
+    .package-item {
+      flex-shrink: 0; /* ПРЕДОТВРАЩАЕТ СЖАТИЕ ФЛЕКС-ЭЛЕМЕНТОВ */
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: #c9c6c1;
+      background: #181717;
+      border: 1px solid #292727;
+      padding: 6px 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background 0.1s, border-color 0.1s;
+    }
+
+    .package-item:hover {
+      background: #242222;
+      border-color: var(--border-bright);
+      color: var(--text-white);
+    }
+
+    /* FOOTER */
+    .footer {
+      text-align: center;
+      padding-top: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .footer a {
+      color: var(--accent-yellow);
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px dashed var(--accent-yellow);
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .footer a:hover {
+      color: #ffffff;
+      border-bottom-color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- HEADER -->
+    <header class="header">
+      <div class="brand-row">
+        <div class="brand-title">be routed<span class="brand-dot">.</span></div>
+        <div class="tag-telemetry">HAPP // ANDROID</div>
+      </div>
+      <p class="header-desc">
+        Исключение российских банков, Госуслуг и сервисов доставки.<br>
+        Трафик идет <b>напрямую на максимальной скорости</b> и без предупреждений о VPN.
+      </p>
+    </header>
+
+    <!-- ACTION PANEL -->
+    <div class="panel corner-crosshairs">
+      <div class="panel-bar">
+        <div class="panel-bar-left">
+          <span class="status-indicator"></span>
+          <span>[ 01 // EXPORT_BUFFER ]</span>
+        </div>
+        <span>526 ПАКЕТОВ</span>
+      </div>
+      <div class="panel-body">
+        <button id="copyBtn" class="btn-action" onclick="copyPackages()">
+          <svg id="btnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="1" ry="1"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="btnText">СКОПИРОВАТЬ СПИСОК (526 ПРИЛОЖЕНИЙ)</span>
+        </button>
+
+        <div id="statusAlert" class="alert-box">
+          [ STATUS: COPIED ]<br>
+          <b>Список из 526 пакетов скопирован в буфер обмена.</b><br>
+          Теперь откройте Happ ➔ выберите режим «Обход» ➔ ⋮ ➔ «Импорт».
+        </div>
+      </div>
+    </div>
+
+    <!-- GUIDE PANEL -->
+    <div class="panel corner-crosshairs">
+      <div class="panel-bar">
+        <div class="panel-bar-left">
+          <span>[ 02 // ИНСТРУКЦИЯ ПО НАСТРОЙКЕ ]</span>
+        </div>
+        <span>HAPP UTILITY</span>
+      </div>
+      <div class="panel-body">
+        <div class="steps-container">
+          
+          <div class="step-row">
+            <div class="step-idx">01</div>
+            <div class="step-instruction">
+              Нажмите кнопку <b>«СКОПИРОВАТЬ СПИСОК»</b> выше.
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-idx">02</div>
+            <div class="step-instruction">
+              Откройте приложение <b>Happ</b> на смартфоне.
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-idx">03</div>
+            <div class="step-instruction">
+              Перейдите в меню:<br>
+              <span class="highlight-pill">Настройки</span> ➔ <span class="highlight-pill">Прокси для выбранных приложений</span>.
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-idx">04</div>
+            <div class="step-instruction">
+              Включите тумблер и выберите режим: <span class="highlight-pill">Обход</span><br>
+              <small style="color: var(--text-muted);">(в Happ режим исключения называется именно «Обход»).</small>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <div class="step-idx">05</div>
+            <div class="step-instruction">
+              В правом верхнем углу нажмите <span class="highlight-pill">три точки (⋮)</span> ➔ <b>«Импорт из буфера обмена»</b>.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTE -->
+    <div class="note-panel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      <div>
+        Happ автоматически отметит из 526 пакетов только те приложения, которые <b>фактически установлены</b> на вашем устройстве.
+      </div>
+    </div>
+
+    <!-- PACKAGE INSPECTOR -->
+    <div class="panel corner-crosshairs">
+      <div class="panel-bar">
+        <div class="panel-bar-left">
+          <span>[ 03 // ПАКЕТЫ ИСКЛЮЧЕНИЙ ]</span>
+        </div>
+        <span id="pkgCountStatus">526 TOTAL</span>
+      </div>
+      <div class="panel-body">
+        <details>
+          <summary>
+            <span>ПОСМОТРЕТЬ СПИСОК ПАКЕТОВ</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </summary>
+          <input type="text" id="searchBox" class="search-input" placeholder="ПОИСК (НАПРИМЕР: SBER, VTB, OZON, TINKOFF)..." oninput="filterPackages()">
+          <div id="packageList" class="package-scroll">
+            <div class="package-item">air.ru.obi.mobile</div>
+            <div class="package-item">az.vtb.android</div>
+            <div class="package-item">biz.growapp.winline</div>
+            <div class="package-item">business.gid.hero</div>
+            <div class="package-item">business.gid.universe</div>
+            <div class="package-item">by.advasoft.android.troika.app</div>
+            <div class="package-item">centrida.neftmagistral</div>
+            <div class="package-item">chat.strelka</div>
+            <div class="package-item">club.chizhik</div>
+            <div class="package-item">club.skllzz.fitness</div>
+            <div class="package-item">com.allgoritm.youla</div>
+            <div class="package-item">com.apegroup.mcdonaldsrussia</div>
+            <div class="package-item">com.apteka.sklad</div>
+            <div class="package-item">com.asmo.infometeos</div>
+            <div class="package-item">com.avito.android</div>
+            <div class="package-item">com.bankffin.portfolio</div>
+            <div class="package-item">com.bastion</div>
+            <div class="package-item">com.bifit.rncbbeta</div>
+            <div class="package-item">com.birzha_rt</div>
+            <div class="package-item">com.bogg.art.vkt</div>
+            <div class="package-item">com.carshering</div>
+            <div class="package-item">com.citymobil</div>
+            <div class="package-item">com.coolclever.app</div>
+            <div class="package-item">com.dartit.RTcabinet</div>
+            <div class="package-item">com.dartit.mobileagent</div>
+            <div class="package-item">com.dartit.rtcabinet</div>
+            <div class="package-item">com.deliveryclub</div>
+            <div class="package-item">com.discover.moscow.lite</div>
+            <div class="package-item">com.edadeal.android</div>
+            <div class="package-item">com.equeo.megafondraiv</div>
+            <div class="package-item">com.evrasiar</div>
+            <div class="package-item">com.gloriajeans.mobile</div>
+            <div class="package-item">com.gmeteos.infometeos</div>
+            <div class="package-item">com.gnivts.ausn</div>
+            <div class="package-item">com.gnivts.selfemployed</div>
+            <div class="package-item">com.goodok.mts</div>
+            <div class="package-item">com.gpn.azs</div>
+            <div class="package-item">com.grotem.match</div>
+            <div class="package-item">com.horosho.tips</div>
+            <div class="package-item">com.icemobile.lenta.prod</div>
+            <div class="package-item">com.idamob.tinkoff.android</div>
+            <div class="package-item">com.indygomobi.detifm</div>
+            <div class="package-item">com.indygomobi.relaxfm</div>
+            <div class="package-item">com.indygomobi.zenit</div>
+            <div class="package-item">com.invitro.app</div>
+            <div class="package-item">com.iwedia.ui.beeline.atv</div>
+            <div class="package-item">com.kazanexpress.ke_app</div>
+            <div class="package-item">com.keenetic.kn</div>
+            <div class="package-item">com.kms.free</div>
+            <div class="package-item">com.lamoda.lite</div>
+            <div class="package-item">com.lenta.employee</div>
+            <div class="package-item">com.lenta.lentochka_service</div>
+            <div class="package-item">com.leroymerlin.mobile</div>
+            <div class="package-item">com.logistic.sdek</div>
+            <div class="package-item">com.loyaltyplant.partner.subway</div>
+            <div class="package-item">com.magnit.delivery.courier</div>
+            <div class="package-item">com.match.club</div>
+            <div class="package-item">com.matchtv.rustore</div>
+            <div class="package-item">com.maxxt.recordradio</div>
+            <div class="package-item">com.mcd.superapp</div>
+            <div class="package-item">com.mcptt</div>
+            <div class="package-item">com.megafon.kk</div>
+            <div class="package-item">com.megafon.maps</div>
+            <div class="package-item">com.megafon.mcca.android.store</div>
+            <div class="package-item">com.megafon.rk</div>
+            <div class="package-item">com.mobium12580.app</div>
+            <div class="package-item">com.moex.finuslugi</div>
+            <div class="package-item">com.moscowsport</div>
+            <div class="package-item">com.mts.who_calls</div>
+            <div class="package-item">com.my.mygamesapp</div>
+            <div class="package-item">com.national.lottery</div>
+            <div class="package-item">com.navplatform.navigator.public</div>
+            <div class="package-item">com.notissimus.allinstruments.android</div>
+            <div class="package-item">com.octopod.russianpost.client.android</div>
+            <div class="package-item">com.onecwearable.keyboard.rustore</div>
+            <div class="package-item">com.orgp.spbpodorozhnik</div>
+            <div class="package-item">com.platfomni.gorzdrav</div>
+            <div class="package-item">com.pobeda.anniversary</div>
+            <div class="package-item">com.pogoda.infometeos</div>
+            <div class="package-item">com.premiumbonus.jamm.ramen</div>
+            <div class="package-item">com.programmisty.emiasapp</div>
+            <div class="package-item">com.punicapp.whoosh</div>
+            <div class="package-item">com.rostelecom.printservice</div>
+            <div class="package-item">com.ru.dixy</div>
+            <div class="package-item">com.rzd.eventsrzd</div>
+            <div class="package-item">com.salute.smarthome.prod</div>
+            <div class="package-item">com.sberauto.mobile</div>
+            <div class="package-item">com.sberbank.sberpravo</div>
+            <div class="package-item">com.sdkit.search.app</div>
+            <div class="package-item">com.spbtv.rosing</div>
+            <div class="package-item">com.svoi.bank</div>
+            <div class="package-item">com.taxsee.taxsee</div>
+            <div class="package-item">com.tdm.messenger</div>
+            <div class="package-item">com.teremok.keys</div>
+            <div class="package-item">com.tjuraniaapp</div>
+            <div class="package-item">com.tseh85</div>
+            <div class="package-item">com.uchi.app</div>
+            <div class="package-item">com.uip.gosuslugi2</div>
+            <div class="package-item">com.uma.musicvk</div>
+            <div class="package-item">com.vk.admin</div>
+            <div class="package-item">com.vk.calls</div>
+            <div class="package-item">com.vk.clips</div>
+            <div class="package-item">com.vk.im</div>
+            <div class="package-item">com.vk.love</div>
+            <div class="package-item">com.vk.mail</div>
+            <div class="package-item">com.vk.tv</div>
+            <div class="package-item">com.vk.vkvideo</div>
+            <div class="package-item">com.vkontakte.android</div>
+            <div class="package-item">com.vkusvill.courier</div>
+            <div class="package-item">com.vkusvill.vacancy</div>
+            <div class="package-item">com.wbextdelivery</div>
+            <div class="package-item">com.wbpoint.android.prod.release</div>
+            <div class="package-item">com.wbstream_app</div>
+            <div class="package-item">com.whsd.whsdapp</div>
+            <div class="package-item">com.wildberries.consultations</div>
+            <div class="package-item">com.wildberries.ru</div>
+            <div class="package-item">com.wildberries.wbkey</div>
+            <div class="package-item">com.wms_mm_point.mm_delivery_point</div>
+            <div class="package-item">com.yandex.aliceapp</div>
+            <div class="package-item">com.yandex.bank</div>
+            <div class="package-item">com.yandex.bluecollars</div>
+            <div class="package-item">com.yandex.browser</div>
+            <div class="package-item">com.yandex.browser.lite</div>
+            <div class="package-item">com.yandex.iot</div>
+            <div class="package-item">com.yandex.lavka</div>
+            <div class="package-item">com.yandex.mobile.drive</div>
+            <div class="package-item">com.yandex.mobile.realty</div>
+            <div class="package-item">com.yandex.plus.game.city</div>
+            <div class="package-item">com.yandex.searchapp</div>
+            <div class="package-item">com.yandex.shedevrus</div>
+            <div class="package-item">com.yandex.shedevrus2</div>
+            <div class="package-item">com.yandex.tasks.androidapp</div>
+            <div class="package-item">com.yandex.yamb</div>
+            <div class="package-item">com.zvooq.openplay</div>
+            <div class="package-item">es.hol.ing.zagsr</div>
+            <div class="package-item">games.my.cloud</div>
+            <div class="package-item">games.my.cloud.tv</div>
+            <div class="package-item">goldapple.ru.goldapple.customers</div>
+            <div class="package-item">gpm.tnt_premier</div>
+            <div class="package-item">im.dlg.dialogx</div>
+            <div class="package-item">im.dlg.enterprise</div>
+            <div class="package-item">intech.global.com.beeline</div>
+            <div class="package-item">io.github.dovecoteescapee.byedpi</div>
+            <div class="package-item">io.itforces.android.timetable</div>
+            <div class="package-item">level.travel</div>
+            <div class="package-item">live.vkplay.app</div>
+            <div class="package-item">logo.com.mbanking</div>
+            <div class="package-item">me.membrana.kids.parent.app</div>
+            <div class="package-item">megafon.transport.mobile</div>
+            <div class="package-item">one.premier.rustoretv</div>
+            <div class="package-item">org.orange.mobile</div>
+            <div class="package-item">org.rtk.cleaning</div>
+            <div class="package-item">otello.dgis.ru</div>
+            <div class="package-item">pro.arora.mobile.maradi</div>
+            <div class="package-item">pro.arora.mobile.pizza_milana</div>
+            <div class="package-item">pro.rocketTech.rocket.rocketapp</div>
+            <div class="package-item">pro.sber_zvuk</div>
+            <div class="package-item">ru.abrr.gas</div>
+            <div class="package-item">ru.aisa.android.ekpv2</div>
+            <div class="package-item">ru.akbars.mobile</div>
+            <div class="package-item">ru.alfabank.mobile.android</div>
+            <div class="package-item">ru.alfabank.oavdo.amc</div>
+            <div class="package-item">ru.alfadirect.app</div>
+            <div class="package-item">ru.alfastrah.app</div>
+            <div class="package-item">ru.aliexpress.buyer</div>
+            <div class="package-item">ru.altarix.mos.pgu</div>
+            <div class="package-item">ru.amina.moscow</div>
+            <div class="package-item">ru.auto.ara</div>
+            <div class="package-item">ru.aviasales</div>
+            <div class="package-item">ru.bankuralsib.mb.android</div>
+            <div class="package-item">ru.bcs.bcsbank</div>
+            <div class="package-item">ru.beeline.beebookreader</div>
+            <div class="package-item">ru.beeline.cloud</div>
+            <div class="package-item">ru.beeline.dol</div>
+            <div class="package-item">ru.beeline.messengerx</div>
+            <div class="package-item">ru.beeline.mwpsapp</div>
+            <div class="package-item">ru.beeline.pro</div>
+            <div class="package-item">ru.beeline.services</div>
+            <div class="package-item">ru.beeline.tve.android</div>
+            <div class="package-item">ru.beru.android</div>
+            <div class="package-item">ru.bkfon</div>
+            <div class="package-item">ru.bristol.bristol_app</div>
+            <div class="package-item">ru.bspb</div>
+            <div class="package-item">ru.burgerking</div>
+            <div class="package-item">ru.cardsmobile.mw3</div>
+            <div class="package-item">ru.cdek.courier</div>
+            <div class="package-item">ru.cdek.ek5</div>
+            <div class="package-item">ru.chitaigorod.mobile</div>
+            <div class="package-item">ru.cian.main</div>
+            <div class="package-item">ru.citilink</div>
+            <div class="package-item">ru.compass.tag</div>
+            <div class="package-item">ru.crptech.b2bmark</div>
+            <div class="package-item">ru.crptech.mark</div>
+            <div class="package-item">ru.dahl.messenger</div>
+            <div class="package-item">ru.datapax.mosobl</div>
+            <div class="package-item">ru.detmir.dmbonus</div>
+            <div class="package-item">ru.diftechsvc</div>
+            <div class="package-item">ru.dikidi</div>
+            <div class="package-item">ru.dit.smartstaff</div>
+            <div class="package-item">ru.dns.shop.android</div>
+            <div class="package-item">ru.dodopizza.app</div>
+            <div class="package-item">ru.domclick.mortgage</div>
+            <div class="package-item">ru.domopult.mosobleirc.android</div>
+            <div class="package-item">ru.drclinics.app.sovcom</div>
+            <div class="package-item">ru.dublgis.dgismobile</div>
+            <div class="package-item">ru.dublgis.dgismobile4preview</div>
+            <div class="package-item">ru.fanid</div>
+            <div class="package-item">ru.filit.mvideo.b2c</div>
+            <div class="package-item">ru.finassist</div>
+            <div class="package-item">ru.fns.billchecker</div>
+            <div class="package-item">ru.fns.billchecker.mobile.android</div>
+            <div class="package-item">ru.fns.lkfl</div>
+            <div class="package-item">ru.foodfox.client</div>
+            <div class="package-item">ru.ftc.tc</div>
+            <div class="package-item">ru.gazprombank.android.mobilebank.app</div>
+            <div class="package-item">ru.gazprompay.android</div>
+            <div class="package-item">ru.getpharma.eapteka</div>
+            <div class="package-item">ru.gibdd_pay.app</div>
+            <div class="package-item">ru.gid.app</div>
+            <div class="package-item">ru.gid.eventsapp</div>
+            <div class="package-item">ru.gid.most</div>
+            <div class="package-item">ru.gnivc.lkip</div>
+            <div class="package-item">ru.goods.marketplace</div>
+            <div class="package-item">ru.gosuslugi.auto</div>
+            <div class="package-item">ru.gosuslugi.culture</div>
+            <div class="package-item">ru.gosuslugi.goskey</div>
+            <div class="package-item">ru.gosuslugi.migrant</div>
+            <div class="package-item">ru.gosuslugi.pos</div>
+            <div class="package-item">ru.gosuslugi.pos.executor</div>
+            <div class="package-item">ru.gosuslugi.school</div>
+            <div class="package-item">ru.gosuslugi.volunteer</div>
+            <div class="package-item">ru.hh.android</div>
+            <div class="package-item">ru.hh.employer.android</div>
+            <div class="package-item">ru.ideast.championat</div>
+            <div class="package-item">ru.ideast.humor</div>
+            <div class="package-item">ru.ideast.nrj</div>
+            <div class="package-item">ru.ideast.romantika</div>
+            <div class="package-item">ru.ideast.ru101.rustore</div>
+            <div class="package-item">ru.imteleport.plp2</div>
+            <div class="package-item">ru.instamart</div>
+            <div class="package-item">ru.intech.lki</div>
+            <div class="package-item">ru.kari.android</div>
+            <div class="package-item">ru.kfc.kfc_delivery</div>
+            <div class="package-item">ru.kinopoisk</div>
+            <div class="package-item">ru.lenta.lentochka</div>
+            <div class="package-item">ru.leonardo.leonardoshop</div>
+            <div class="package-item">ru.leroymerlin.employee</div>
+            <div class="package-item">ru.leroymerlin.mobile</div>
+            <div class="package-item">ru.letobank.prometheus</div>
+            <div class="package-item">ru.lewis.dbo</div>
+            <div class="package-item">ru.lifepay.pos.alfapos</div>
+            <div class="package-item">ru.lifepay.pos.vtb</div>
+            <div class="package-item">ru.litres.android</div>
+            <div class="package-item">ru.litres.android.readfree</div>
+            <div class="package-item">ru.litres.androidtv</div>
+            <div class="package-item">ru.livelib.client</div>
+            <div class="package-item">ru.m2.squaremeter</div>
+            <div class="package-item">ru.m4bank.softpos.alfaru</div>
+            <div class="package-item">ru.m4bank.softpos.rshb</div>
+            <div class="package-item">ru.m4bank.softpos.vtbpos</div>
+            <div class="package-item">ru.magnit.hrtest.android</div>
+            <div class="package-item">ru.magnit.mesmag</div>
+            <div class="package-item">ru.magnit.tag</div>
+            <div class="package-item">ru.magnit.tms.armhde</div>
+            <div class="package-item">ru.magnit.vendorapp</div>
+            <div class="package-item">ru.mail.biz.avocado</div>
+            <div class="package-item">ru.mail.cloud</div>
+            <div class="package-item">ru.mail.horo.android</div>
+            <div class="package-item">ru.mail.intranet</div>
+            <div class="package-item">ru.mail.mailapp</div>
+            <div class="package-item">ru.mail.my</div>
+            <div class="package-item">ru.mail.search.electroscope</div>
+            <div class="package-item">ru.maxidom.ecomm</div>
+            <div class="package-item">ru.megafon.mlk</div>
+            <div class="package-item">ru.megafon.vn.client</div>
+            <div class="package-item">ru.megalabs.multifon</div>
+            <div class="package-item">ru.megamarket.marketplace</div>
+            <div class="package-item">ru.mes.dnevnik</div>
+            <div class="package-item">ru.mes.sputnik</div>
+            <div class="package-item">ru.mgfoms.pandora</div>
+            <div class="package-item">ru.mntk.dostavka.prod</div>
+            <div class="package-item">ru.more.play</div>
+            <div class="package-item">ru.mos.app</div>
+            <div class="package-item">ru.mos.ed</div>
+            <div class="package-item">ru.mos.gz</div>
+            <div class="package-item">ru.mos.myid</div>
+            <div class="package-item">ru.mos.ourcity</div>
+            <div class="package-item">ru.mos.polls</div>
+            <div class="package-item">ru.mos.um</div>
+            <div class="package-item">ru.mos.zaryadye</div>
+            <div class="package-item">ru.mosgorpass</div>
+            <div class="package-item">ru.mosmetro.metro</div>
+            <div class="package-item">ru.mosoblgaz</div>
+            <div class="package-item">ru.mosparking.appnew</div>
+            <div class="package-item">ru.mosreg.easuz.portal</div>
+            <div class="package-item">ru.mosreg.ekjp</div>
+            <div class="package-item">ru.mosreg.mingos.mdp.app</div>
+            <div class="package-item">ru.mosreg.mo112</div>
+            <div class="package-item">ru.mosreg.uslugi.mobile.beta</div>
+            <div class="package-item">ru.mts.bank</div>
+            <div class="package-item">ru.mts.books.droid</div>
+            <div class="package-item">ru.mts.live.app</div>
+            <div class="package-item">ru.mts.mtscode</div>
+            <div class="package-item">ru.mts.mtstv</div>
+            <div class="package-item">ru.mts.music.android</div>
+            <div class="package-item">ru.mts.mymts</div>
+            <div class="package-item">ru.mts.pay</div>
+            <div class="package-item">ru.mts.twomem</div>
+            <div class="package-item">ru.mts.vdome.resident</div>
+            <div class="package-item">ru.mvm.eldo</div>
+            <div class="package-item">ru.mybook</div>
+            <div class="package-item">ru.myspar</div>
+            <div class="package-item">ru.nalog.rmr.client</div>
+            <div class="package-item">ru.netbynet.app.personal_cabinet</div>
+            <div class="package-item">ru.netcraze.app</div>
+            <div class="package-item">ru.nspk.mir.loyalty</div>
+            <div class="package-item">ru.nspk.mirpay</div>
+            <div class="package-item">ru.nspk.sbpay</div>
+            <div class="package-item">ru.ntv.client</div>
+            <div class="package-item">ru.ntv.client.tv</div>
+            <div class="package-item">ru.ntv.today</div>
+            <div class="package-item">ru.ntvplus.service</div>
+            <div class="package-item">ru.ok.android</div>
+            <div class="package-item">ru.ok.dating</div>
+            <div class="package-item">ru.okbmei.gosservice</div>
+            <div class="package-item">ru.oneme.app</div>
+            <div class="package-item">ru.onlime.my.app</div>
+            <div class="package-item">ru.ostrovok.android</div>
+            <div class="package-item">ru.otpbank.mobile</div>
+            <div class="package-item">ru.ozon.app.android</div>
+            <div class="package-item">ru.ozon.chatzone</div>
+            <div class="package-item">ru.ozon.fintech.apvz</div>
+            <div class="package-item">ru.ozon.fintech.finance</div>
+            <div class="package-item">ru.ozon.fintech.sme</div>
+            <div class="package-item">ru.ozon.flex</div>
+            <div class="package-item">ru.ozon.fresh</div>
+            <div class="package-item">ru.ozon.hire</div>
+            <div class="package-item">ru.ozon.magistral</div>
+            <div class="package-item">ru.ozon.maple_app</div>
+            <div class="package-item">ru.ozon.ozon_pvz</div>
+            <div class="package-item">ru.ozon.profit</div>
+            <div class="package-item">ru.ozon.select</div>
+            <div class="package-item">ru.ozon.seller_app</div>
+            <div class="package-item">ru.ozon.tv</div>
+            <div class="package-item">ru.paribet</div>
+            <div class="package-item">ru.perekrestok.app</div>
+            <div class="package-item">ru.pichesky.rosneft</div>
+            <div class="package-item">ru.pikabu.android</div>
+            <div class="package-item">ru.plazius.cofix</div>
+            <div class="package-item">ru.plus.bookmate</div>
+            <div class="package-item">ru.profmedia.avtoradio</div>
+            <div class="package-item">ru.profmedia.likefm</div>
+            <div class="package-item">ru.pyaterochka.app.browser</div>
+            <div class="package-item">ru.rabota.app2</div>
+            <div class="package-item">ru.raiffeisennews</div>
+            <div class="package-item">ru.rambler.horoscopes.twa</div>
+            <div class="package-item">ru.rambler.mail</div>
+            <div class="package-item">ru.reksoft.okey</div>
+            <div class="package-item">ru.rgs.lk</div>
+            <div class="package-item">ru.ritmmedia.yappy</div>
+            <div class="package-item">ru.rolf.rolf</div>
+            <div class="package-item">ru.rosbank.android.beta</div>
+            <div class="package-item">ru.rostel</div>
+            <div class="package-item">ru.rostelecom.ideas</div>
+            <div class="package-item">ru.rostelecom.vatsmobilelk</div>
+            <div class="package-item">ru.rshb.dbo</div>
+            <div class="package-item">ru.rshb.dboul</div>
+            <div class="package-item">ru.rshb.digitalcoworkeroffice</div>
+            <div class="package-item">ru.rshb.ips_qr</div>
+            <div class="package-item">ru.rshb.privatebusiness</div>
+            <div class="package-item">ru.rshb.svoe_rodnoe</div>
+            <div class="package-item">ru.rshb.svoedom_android</div>
+            <div class="package-item">ru.rshb.svojfermer</div>
+            <div class="package-item">ru.rt.key</div>
+            <div class="package-item">ru.rt.life</div>
+            <div class="package-item">ru.rt.masterkey</div>
+            <div class="package-item">ru.rt.mb_installer</div>
+            <div class="package-item">ru.rt.mobileoffice</div>
+            <div class="package-item">ru.rt.ritm</div>
+            <div class="package-item">ru.rt.smarthome</div>
+            <div class="package-item">ru.rt.video.app.mobile</div>
+            <div class="package-item">ru.rt.video.app.mobile.b2b</div>
+            <div class="package-item">ru.rt.video.app.tv</div>
+            <div class="package-item">ru.rt.videocomfort</div>
+            <div class="package-item">ru.rt.wfm</div>
+            <div class="package-item">ru.rtdc.kakdela</div>
+            <div class="package-item">ru.russianhighways.mobile</div>
+            <div class="package-item">ru.russianpost.pechkin</div>
+            <div class="package-item">ru.rutube.RutubeKids</div>
+            <div class="package-item">ru.rutube.app</div>
+            <div class="package-item">ru.rutube.app.tv</div>
+            <div class="package-item">ru.rutube.studio</div>
+            <div class="package-item">ru.rzd.cargolk</div>
+            <div class="package-item">ru.rzd.newsdo.skills</div>
+            <div class="package-item">ru.rzd.pass</div>
+            <div class="package-item">ru.salute.b2b.prod</div>
+            <div class="package-item">ru.sbcs.store</div>
+            <div class="package-item">ru.sber.csradar</div>
+            <div class="package-item">ru.sber.telecom</div>
+            <div class="package-item">ru.sberbank.investor</div>
+            <div class="package-item">ru.sberbank.onlineencashment</div>
+            <div class="package-item">ru.sberbank.sberkids</div>
+            <div class="package-item">ru.sberbank.sbersign</div>
+            <div class="package-item">ru.sberbank_sbbol</div>
+            <div class="package-item">ru.sberbankmobile</div>
+            <div class="package-item">ru.sberins.insureapp.android</div>
+            <div class="package-item">ru.sbermegamarket.pro</div>
+            <div class="package-item">ru.serebryakovas.lukoilmobileapp</div>
+            <div class="package-item">ru.setka</div>
+            <div class="package-item">ru.sigma.gisgkh</div>
+            <div class="package-item">ru.sima_land.spb.market</div>
+            <div class="package-item">ru.smclinic.app.lk</div>
+            <div class="package-item">ru.smmd.superdelivery</div>
+            <div class="package-item">ru.sovcombank.dms</div>
+            <div class="package-item">ru.sovcombank.investor</div>
+            <div class="package-item">ru.sovcomcard.halva.v1</div>
+            <div class="package-item">ru.spb.dnevnik</div>
+            <div class="package-item">ru.spb.iac.dnevnikspb_new</div>
+            <div class="package-item">ru.spb.parking</div>
+            <div class="package-item">ru.sportmaster.app</div>
+            <div class="package-item">ru.start.androidmobile</div>
+            <div class="package-item">ru.stoloto.mobile</div>
+            <div class="package-item">ru.sunlight.sunlight</div>
+            <div class="package-item">ru.systtech.megafon.mobile</div>
+            <div class="package-item">ru.tander.magnit</div>
+            <div class="package-item">ru.tander.mobile_scout_flutter</div>
+            <div class="package-item">ru.tatneft.gasstations</div>
+            <div class="package-item">ru.taxovichkof.android</div>
+            <div class="package-item">ru.tbank.online</div>
+            <div class="package-item">ru.technokad.digitalkey</div>
+            <div class="package-item">ru.tele2.mytele2</div>
+            <div class="package-item">ru.tii.lkcomu</div>
+            <div class="package-item">ru.tinkoff.bnpl</div>
+            <div class="package-item">ru.tinkoff.invest.course</div>
+            <div class="package-item">ru.tinkoff.investing</div>
+            <div class="package-item">ru.tinkoff.magent</div>
+            <div class="package-item">ru.tinkoff.mvno</div>
+            <div class="package-item">ru.tinkoff.posterminal</div>
+            <div class="package-item">ru.tinkoff.sme</div>
+            <div class="package-item">ru.tntmusic.tv</div>
+            <div class="package-item">ru.tokyocity.tokyocity</div>
+            <div class="package-item">ru.troika.regional</div>
+            <div class="package-item">ru.tutu.etrains</div>
+            <div class="package-item">ru.tutu.tutu_emp</div>
+            <div class="package-item">ru.ues.users_personal_account</div>
+            <div class="package-item">ru.ufanet.myufanet</div>
+            <div class="package-item">ru.urentbike.app</div>
+            <div class="package-item">ru.usetech.velobike.v2</div>
+            <div class="package-item">ru.utk.dostavka</div>
+            <div class="package-item">ru.vk.hrtek</div>
+            <div class="package-item">ru.vk.store</div>
+            <div class="package-item">ru.vk.video</div>
+            <div class="package-item">ru.vkmusic.audio</div>
+            <div class="package-item">ru.vkpm.comedy</div>
+            <div class="package-item">ru.vkusvill</div>
+            <div class="package-item">ru.vseapteki</div>
+            <div class="package-item">ru.vtb.corporate.android.main_application</div>
+            <div class="package-item">ru.vtb.invest</div>
+            <div class="package-item">ru.vtb.smb</div>
+            <div class="package-item">ru.vtb24.mobilebanking.android</div>
+            <div class="package-item">ru.wb.courier</div>
+            <div class="package-item">ru.wb.go</div>
+            <div class="package-item">ru.wb.guru</div>
+            <div class="package-item">ru.wb.wband</div>
+            <div class="package-item">ru.wildberries.books</div>
+            <div class="package-item">ru.wildberries.manager</div>
+            <div class="package-item">ru.wildberries.team</div>
+            <div class="package-item">ru.wildberries.team2</div>
+            <div class="package-item">ru.wildberries.wbpayclient</div>
+            <div class="package-item">ru.winelab</div>
+            <div class="package-item">ru.wink.music</div>
+            <div class="package-item">ru.wink.music.tv</div>
+            <div class="package-item">ru.x5.foodru.rs</div>
+            <div class="package-item">ru.x5.key</div>
+            <div class="package-item">ru.x5.mfpnew</div>
+            <div class="package-item">ru.x5.mrm_android.personaldevice</div>
+            <div class="package-item">ru.x5.omni</div>
+            <div class="package-item">ru.x5.opermax.aura</div>
+            <div class="package-item">ru.x5.rooms</div>
+            <div class="package-item">ru.x5.wl.slata</div>
+            <div class="package-item">ru.x5.wrs2</div>
+            <div class="package-item">ru.x5.x5job</div>
+            <div class="package-item">ru.yandex.androidkeyboard</div>
+            <div class="package-item">ru.yandex.disk</div>
+            <div class="package-item">ru.yandex.games</div>
+            <div class="package-item">ru.yandex.key</div>
+            <div class="package-item">ru.yandex.mail</div>
+            <div class="package-item">ru.yandex.market.partner</div>
+            <div class="package-item">ru.yandex.metro</div>
+            <div class="package-item">ru.yandex.mobile.fmradio</div>
+            <div class="package-item">ru.yandex.mobile.gasstations</div>
+            <div class="package-item">ru.yandex.music</div>
+            <div class="package-item">ru.yandex.practicum.flutter_practicum</div>
+            <div class="package-item">ru.yandex.searchplugin</div>
+            <div class="package-item">ru.yandex.subtitles</div>
+            <div class="package-item">ru.yandex.taxi</div>
+            <div class="package-item">ru.yandex.taximeter</div>
+            <div class="package-item">ru.yandex.telemost</div>
+            <div class="package-item">ru.yandex.translate</div>
+            <div class="package-item">ru.yandex.travel</div>
+            <div class="package-item">ru.yandex.uber</div>
+            <div class="package-item">ru.yandex.weatherplugin</div>
+            <div class="package-item">ru.yandex.yandexmaps</div>
+            <div class="package-item">ru.yandex.yandexnavi</div>
+            <div class="package-item">ru.yandex_team.calendar_app</div>
+            <div class="package-item">ru.yoo.business</div>
+            <div class="package-item">ru.yoo.kassa</div>
+            <div class="package-item">ru.yoo.money</div>
+            <div class="package-item">ru.yoo.sdk.kassa.payments.example.release</div>
+            <div class="package-item">ru.yota.android</div>
+            <div class="package-item">ru.yozhka</div>
+            <div class="package-item">ru.zen.android</div>
+            <div class="package-item">ru.zhuck.webapp</div>
+            <div class="package-item">ru.zolotoy585.customer</div>
+            <div class="package-item">ruagro.start.tech</div>
+            <div class="package-item">su.azure.paymaster</div>
+            <div class="package-item">team.rtds.checkcontrol</div>
+            <div class="package-item">tech.clink.emias.emiasqrcode</div>
+            <div class="package-item">travel.ozon.mobile</div>
+            <div class="package-item">tv.lfstrm.smotreshka</div>
+            <div class="package-item">tv.ntvplus.app</div>
+            <div class="package-item">tv.ntvplus.app.tv</div>
+            <div class="package-item">wb.partners</div>
+            <div class="package-item">wildberries.business</div>
+            <div class="package-item">www.metro.com</div>
+            <div class="package-item">youdrive.today</div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      be routed<span class="brand-dot">.</span> // <a href="https://t.me/berouted_support" target="_blank">ПОДДЕРЖКА @berouted_support</a>
+    </footer>
+
+  </div>
+
+  <script>
+    const packageData = "air.ru.obi.mobile\naz.vtb.android\nbiz.growapp.winline\nbusiness.gid.hero\nbusiness.gid.universe\nby.advasoft.android.troika.app\ncentrida.neftmagistral\nchat.strelka\nclub.chizhik\nclub.skllzz.fitness\ncom.allgoritm.youla\ncom.apegroup.mcdonaldsrussia\ncom.apteka.sklad\ncom.asmo.infometeos\ncom.avito.android\ncom.bankffin.portfolio\ncom.bastion\ncom.bifit.rncbbeta\ncom.birzha_rt\ncom.bogg.art.vkt\ncom.carshering\ncom.citymobil\ncom.coolclever.app\ncom.dartit.RTcabinet\ncom.dartit.mobileagent\ncom.dartit.rtcabinet\ncom.deliveryclub\ncom.discover.moscow.lite\ncom.edadeal.android\ncom.equeo.megafondraiv\ncom.evrasiar\ncom.gloriajeans.mobile\ncom.gmeteos.infometeos\ncom.gnivts.ausn\ncom.gnivts.selfemployed\ncom.goodok.mts\ncom.gpn.azs\ncom.grotem.match\ncom.horosho.tips\ncom.icemobile.lenta.prod\ncom.idamob.tinkoff.android\ncom.indygomobi.detifm\ncom.indygomobi.relaxfm\ncom.indygomobi.zenit\ncom.invitro.app\ncom.iwedia.ui.beeline.atv\ncom.kazanexpress.ke_app\ncom.keenetic.kn\ncom.kms.free\ncom.lamoda.lite\ncom.lenta.employee\ncom.lenta.lentochka_service\ncom.leroymerlin.mobile\ncom.logistic.sdek\ncom.loyaltyplant.partner.subway\ncom.magnit.delivery.courier\ncom.match.club\ncom.matchtv.rustore\ncom.maxxt.recordradio\ncom.mcd.superapp\ncom.mcptt\ncom.megafon.kk\ncom.megafon.maps\ncom.megafon.mcca.android.store\ncom.megafon.rk\ncom.mobium12580.app\ncom.moex.finuslugi\ncom.moscowsport\ncom.mts.who_calls\ncom.my.mygamesapp\ncom.national.lottery\ncom.navplatform.navigator.public\ncom.notissimus.allinstruments.android\ncom.octopod.russianpost.client.android\ncom.onecwearable.keyboard.rustore\ncom.orgp.spbpodorozhnik\ncom.platfomni.gorzdrav\ncom.pobeda.anniversary\ncom.pogoda.infometeos\ncom.premiumbonus.jamm.ramen\ncom.programmisty.emiasapp\ncom.punicapp.whoosh\ncom.rostelecom.printservice\ncom.ru.dixy\ncom.rzd.eventsrzd\ncom.salute.smarthome.prod\ncom.sberauto.mobile\ncom.sberbank.sberpravo\ncom.sdkit.search.app\ncom.spbtv.rosing\ncom.svoi.bank\ncom.taxsee.taxsee\ncom.tdm.messenger\ncom.teremok.keys\ncom.tjuraniaapp\ncom.tseh85\ncom.uchi.app\ncom.uip.gosuslugi2\ncom.uma.musicvk\ncom.vk.admin\ncom.vk.calls\ncom.vk.clips\ncom.vk.im\ncom.vk.love\ncom.vk.mail\ncom.vk.tv\ncom.vk.vkvideo\ncom.vkontakte.android\ncom.vkusvill.courier\ncom.vkusvill.vacancy\ncom.wbextdelivery\ncom.wbpoint.android.prod.release\ncom.wbstream_app\ncom.whsd.whsdapp\ncom.wildberries.consultations\ncom.wildberries.ru\ncom.wildberries.wbkey\ncom.wms_mm_point.mm_delivery_point\ncom.yandex.aliceapp\ncom.yandex.bank\ncom.yandex.bluecollars\ncom.yandex.browser\ncom.yandex.browser.lite\ncom.yandex.iot\ncom.yandex.lavka\ncom.yandex.mobile.drive\ncom.yandex.mobile.realty\ncom.yandex.plus.game.city\ncom.yandex.searchapp\ncom.yandex.shedevrus\ncom.yandex.shedevrus2\ncom.yandex.tasks.androidapp\ncom.yandex.yamb\ncom.zvooq.openplay\nes.hol.ing.zagsr\ngames.my.cloud\ngames.my.cloud.tv\ngoldapple.ru.goldapple.customers\ngpm.tnt_premier\nim.dlg.dialogx\nim.dlg.enterprise\nintech.global.com.beeline\nio.github.dovecoteescapee.byedpi\nio.itforces.android.timetable\nlevel.travel\nlive.vkplay.app\nlogo.com.mbanking\nme.membrana.kids.parent.app\nmegafon.transport.mobile\none.premier.rustoretv\norg.orange.mobile\norg.rtk.cleaning\notello.dgis.ru\npro.arora.mobile.maradi\npro.arora.mobile.pizza_milana\npro.rocketTech.rocket.rocketapp\npro.sber_zvuk\nru.abrr.gas\nru.aisa.android.ekpv2\nru.akbars.mobile\nru.alfabank.mobile.android\nru.alfabank.oavdo.amc\nru.alfadirect.app\nru.alfastrah.app\nru.aliexpress.buyer\nru.altarix.mos.pgu\nru.amina.moscow\nru.auto.ara\nru.aviasales\nru.bankuralsib.mb.android\nru.bcs.bcsbank\nru.beeline.beebookreader\nru.beeline.cloud\nru.beeline.dol\nru.beeline.messengerx\nru.beeline.mwpsapp\nru.beeline.pro\nru.beeline.services\nru.beeline.tve.android\nru.beru.android\nru.bkfon\nru.bristol.bristol_app\nru.bspb\nru.burgerking\nru.cardsmobile.mw3\nru.cdek.courier\nru.cdek.ek5\nru.chitaigorod.mobile\nru.cian.main\nru.citilink\nru.compass.tag\nru.crptech.b2bmark\nru.crptech.mark\nru.dahl.messenger\nru.datapax.mosobl\nru.detmir.dmbonus\nru.diftechsvc\nru.dikidi\nru.dit.smartstaff\nru.dns.shop.android\nru.dodopizza.app\nru.domclick.mortgage\nru.domopult.mosobleirc.android\nru.drclinics.app.sovcom\nru.dublgis.dgismobile\nru.dublgis.dgismobile4preview\nru.fanid\nru.filit.mvideo.b2c\nru.finassist\nru.fns.billchecker\nru.fns.billchecker.mobile.android\nru.fns.lkfl\nru.foodfox.client\nru.ftc.tc\nru.gazprombank.android.mobilebank.app\nru.gazprompay.android\nru.getpharma.eapteka\nru.gibdd_pay.app\nru.gid.app\nru.gid.eventsapp\nru.gid.most\nru.gnivc.lkip\nru.goods.marketplace\nru.gosuslugi.auto\nru.gosuslugi.culture\nru.gosuslugi.goskey\nru.gosuslugi.migrant\nru.gosuslugi.pos\nru.gosuslugi.pos.executor\nru.gosuslugi.school\nru.gosuslugi.volunteer\nru.hh.android\nru.hh.employer.android\nru.ideast.championat\nru.ideast.humor\nru.ideast.nrj\nru.ideast.romantika\nru.ideast.ru101.rustore\nru.imteleport.plp2\nru.instamart\nru.intech.lki\nru.kari.android\nru.kfc.kfc_delivery\nru.kinopoisk\nru.lenta.lentochka\nru.leonardo.leonardoshop\nru.leroymerlin.employee\nru.leroymerlin.mobile\nru.letobank.prometheus\nru.lewis.dbo\nru.lifepay.pos.alfapos\nru.lifepay.pos.vtb\nru.litres.android\nru.litres.android.readfree\nru.litres.androidtv\nru.livelib.client\nru.m2.squaremeter\nru.m4bank.softpos.alfaru\nru.m4bank.softpos.rshb\nru.m4bank.softpos.vtbpos\nru.magnit.hrtest.android\nru.magnit.mesmag\nru.magnit.tag\nru.magnit.tms.armhde\nru.magnit.vendorapp\nru.mail.biz.avocado\nru.mail.cloud\nru.mail.horo.android\nru.mail.intranet\nru.mail.mailapp\nru.mail.my\nru.mail.search.electroscope\nru.maxidom.ecomm\nru.megafon.mlk\nru.megafon.vn.client\nru.megalabs.multifon\nru.megamarket.marketplace\nru.mes.dnevnik\nru.mes.sputnik\nru.mgfoms.pandora\nru.mntk.dostavka.prod\nru.more.play\nru.mos.app\nru.mos.ed\nru.mos.gz\nru.mos.myid\nru.mos.ourcity\nru.mos.polls\nru.mos.um\nru.mos.zaryadye\nru.mosgorpass\nru.mosmetro.metro\nru.mosoblgaz\nru.mosparking.appnew\nru.mosreg.easuz.portal\nru.mosreg.ekjp\nru.mosreg.mingos.mdp.app\nru.mosreg.mo112\nru.mosreg.uslugi.mobile.beta\nru.mts.bank\nru.mts.books.droid\nru.mts.live.app\nru.mts.mtscode\nru.mts.mtstv\nru.mts.music.android\nru.mts.mymts\nru.mts.pay\nru.mts.twomem\nru.mts.vdome.resident\nru.mvm.eldo\nru.mybook\nru.myspar\nru.nalog.rmr.client\nru.netbynet.app.personal_cabinet\nru.netcraze.app\nru.nspk.mir.loyalty\nru.nspk.mirpay\nru.nspk.sbpay\nru.ntv.client\nru.ntv.client.tv\nru.ntv.today\nru.ntvplus.service\nru.ok.android\nru.ok.dating\nru.okbmei.gosservice\nru.oneme.app\nru.onlime.my.app\nru.ostrovok.android\nru.otpbank.mobile\nru.ozon.app.android\nru.ozon.chatzone\nru.ozon.fintech.apvz\nru.ozon.fintech.finance\nru.ozon.fintech.sme\nru.ozon.flex\nru.ozon.fresh\nru.ozon.hire\nru.ozon.magistral\nru.ozon.maple_app\nru.ozon.ozon_pvz\nru.ozon.profit\nru.ozon.select\nru.ozon.seller_app\nru.ozon.tv\nru.paribet\nru.perekrestok.app\nru.pichesky.rosneft\nru.pikabu.android\nru.plazius.cofix\nru.plus.bookmate\nru.profmedia.avtoradio\nru.profmedia.likefm\nru.pyaterochka.app.browser\nru.rabota.app2\nru.raiffeisennews\nru.rambler.horoscopes.twa\nru.rambler.mail\nru.reksoft.okey\nru.rgs.lk\nru.ritmmedia.yappy\nru.rolf.rolf\nru.rosbank.android.beta\nru.rostel\nru.rostelecom.ideas\nru.rostelecom.vatsmobilelk\nru.rshb.dbo\nru.rshb.dboul\nru.rshb.digitalcoworkeroffice\nru.rshb.ips_qr\nru.rshb.privatebusiness\nru.rshb.svoe_rodnoe\nru.rshb.svoedom_android\nru.rshb.svojfermer\nru.rt.key\nru.rt.life\nru.rt.masterkey\nru.rt.mb_installer\nru.rt.mobileoffice\nru.rt.ritm\nru.rt.smarthome\nru.rt.video.app.mobile\nru.rt.video.app.mobile.b2b\nru.rt.video.app.tv\nru.rt.videocomfort\nru.rt.wfm\nru.rtdc.kakdela\nru.russianhighways.mobile\nru.russianpost.pechkin\nru.rutube.RutubeKids\nru.rutube.app\nru.rutube.app.tv\nru.rutube.studio\nru.rzd.cargolk\nru.rzd.newsdo.skills\nru.rzd.pass\nru.salute.b2b.prod\nru.sbcs.store\nru.sber.csradar\nru.sber.telecom\nru.sberbank.investor\nru.sberbank.onlineencashment\nru.sberbank.sberkids\nru.sberbank.sbersign\nru.sberbank_sbbol\nru.sberbankmobile\nru.sberins.insureapp.android\nru.sbermegamarket.pro\nru.serebryakovas.lukoilmobileapp\nru.setka\nru.sigma.gisgkh\nru.sima_land.spb.market\nru.smclinic.app.lk\nru.smmd.superdelivery\nru.sovcombank.dms\nru.sovcombank.investor\nru.sovcomcard.halva.v1\nru.spb.dnevnik\nru.spb.iac.dnevnikspb_new\nru.spb.parking\nru.sportmaster.app\nru.start.androidmobile\nru.stoloto.mobile\nru.sunlight.sunlight\nru.systtech.megafon.mobile\nru.tander.magnit\nru.tander.mobile_scout_flutter\nru.tatneft.gasstations\nru.taxovichkof.android\nru.tbank.online\nru.technokad.digitalkey\nru.tele2.mytele2\nru.tii.lkcomu\nru.tinkoff.bnpl\nru.tinkoff.invest.course\nru.tinkoff.investing\nru.tinkoff.magent\nru.tinkoff.mvno\nru.tinkoff.posterminal\nru.tinkoff.sme\nru.tntmusic.tv\nru.tokyocity.tokyocity\nru.troika.regional\nru.tutu.etrains\nru.tutu.tutu_emp\nru.ues.users_personal_account\nru.ufanet.myufanet\nru.urentbike.app\nru.usetech.velobike.v2\nru.utk.dostavka\nru.vk.hrtek\nru.vk.store\nru.vk.video\nru.vkmusic.audio\nru.vkpm.comedy\nru.vkusvill\nru.vseapteki\nru.vtb.corporate.android.main_application\nru.vtb.invest\nru.vtb.smb\nru.vtb24.mobilebanking.android\nru.wb.courier\nru.wb.go\nru.wb.guru\nru.wb.wband\nru.wildberries.books\nru.wildberries.manager\nru.wildberries.team\nru.wildberries.team2\nru.wildberries.wbpayclient\nru.winelab\nru.wink.music\nru.wink.music.tv\nru.x5.foodru.rs\nru.x5.key\nru.x5.mfpnew\nru.x5.mrm_android.personaldevice\nru.x5.omni\nru.x5.opermax.aura\nru.x5.rooms\nru.x5.wl.slata\nru.x5.wrs2\nru.x5.x5job\nru.yandex.androidkeyboard\nru.yandex.disk\nru.yandex.games\nru.yandex.key\nru.yandex.mail\nru.yandex.market.partner\nru.yandex.metro\nru.yandex.mobile.fmradio\nru.yandex.mobile.gasstations\nru.yandex.music\nru.yandex.practicum.flutter_practicum\nru.yandex.searchplugin\nru.yandex.subtitles\nru.yandex.taxi\nru.yandex.taximeter\nru.yandex.telemost\nru.yandex.translate\nru.yandex.travel\nru.yandex.uber\nru.yandex.weatherplugin\nru.yandex.yandexmaps\nru.yandex.yandexnavi\nru.yandex_team.calendar_app\nru.yoo.business\nru.yoo.kassa\nru.yoo.money\nru.yoo.sdk.kassa.payments.example.release\nru.yota.android\nru.yozhka\nru.zen.android\nru.zhuck.webapp\nru.zolotoy585.customer\nruagro.start.tech\nsu.azure.paymaster\nteam.rtds.checkcontrol\ntech.clink.emias.emiasqrcode\ntravel.ozon.mobile\ntv.lfstrm.smotreshka\ntv.ntvplus.app\ntv.ntvplus.app.tv\nwb.partners\nwildberries.business\nwww.metro.com\nyoudrive.today";
+
+    function copyPackages() {
+      const btn = document.getElementById('copyBtn');
+      const btnIcon = document.getElementById('btnIcon');
+      const btnText = document.getElementById('btnText');
+      const alertBox = document.getElementById('statusAlert');
+
+      const doSuccess = () => {
+        btn.classList.add('success');
+        btnIcon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+        btnText.textContent = 'СКОПИРОВАНО В БУФЕР!';
+        alertBox.style.display = 'block';
+
+        if (navigator.vibrate) {
+          navigator.vibrate(40);
+        }
+
+        setTimeout(() => {
+          btn.classList.remove('success');
+          btnIcon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="1" ry="1"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
+          btnText.textContent = 'СКОПИРОВАТЬ СПИСОК (526 ПРИЛОЖЕНИЙ)';
+        }, 5000);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(packageData).then(doSuccess).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+
+      function fallbackCopy() {
+        const textArea = document.createElement('textarea');
+        textArea.value = packageData;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          doSuccess();
+        } catch (err) {
+          window.alert('Пожалуйста, скопируйте список вручную.');
+        }
+        document.body.removeChild(textArea);
+      }
+    }
+
+    function filterPackages() {
+      const query = document.getElementById('searchBox').value.toLowerCase();
+      const items = document.querySelectorAll('.package-item');
+      let visible = 0;
+      items.forEach(el => {
+        const text = el.textContent.toLowerCase();
+        const matches = text.includes(query);
+        el.style.display = matches ? 'flex' : 'none';
+        if (matches) visible++;
+      });
+      document.getElementById('pkgCountStatus').textContent = visible + ' / 526';
+    }
+  </script>
+</body>
+</html>
